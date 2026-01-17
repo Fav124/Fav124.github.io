@@ -1,11 +1,52 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0B63D6;
+  --color-primary-dark: #084bb0;
+  --color-accent: #10B981;
+  --font-sans: "Inter", "system-ui", "sans-serif";
+
+  --animate-morphing: morphing 15s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes morphing {
+
+    0%,
+    100% {
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+
+    25% {
+      border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+    }
+
+    50% {
+      border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+    }
+
+    75% {
+      border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+}
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
+
   body {
     @apply font-sans bg-slate-50 text-slate-900;
   }
@@ -15,12 +56,15 @@
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/20;
   }
+
   .btn {
     @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 active:scale-95 cursor-pointer;
   }
+
   .btn-primary {
     @apply bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30;
   }
+
   .btn-secondary {
     @apply bg-white text-primary border-2 border-primary hover:bg-primary/5;
   }
