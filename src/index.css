@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans bg-slate-50 text-slate-900;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  .btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 active:scale-95 cursor-pointer;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/30;
+  }
+  .btn-secondary {
+    @apply bg-white text-primary border-2 border-primary hover:bg-primary/5;
+  }
+}
