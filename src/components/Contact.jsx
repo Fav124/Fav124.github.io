@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Phone, MapPin, Github, Send, Instagram, Linkedin, CheckCircle2, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
