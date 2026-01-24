@@ -12,6 +12,22 @@ const Contact = () => {
     });
     const [status, setStatus] = useState('idle'); // idle, loading, success, error
     const [statusMessage, setStatusMessage] = useState('');
+    const [isAdminOnline, setIsAdminOnline] = useState(false);
+
+    useEffect(() => {
+        const channel = supabase.channel('admin_room');
+
+        channel
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                setIsAdminOnline(state.admin !== undefined);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -37,14 +53,20 @@ const Contact = () => {
             if (error) throw error;
 
             setStatus('success');
-            setStatusMessage('Pesan berhasil terkirim secara realtime!');
+
+            if (isAdminOnline) {
+                setStatusMessage('Pesan terkirim! Admin sedang online dan akan segera membalas.');
+            } else {
+                setStatusMessage('Pesan terkirim! Admin sedang offline. InsyaAllah akan segera dibalas.');
+            }
+
             setFormData({ name: '', email: '', subject: '', message: '' });
 
             setTimeout(() => setStatus('idle'), 5000);
         } catch (error) {
             console.error('Error sending message:', error);
             setStatus('error');
-            setStatusMessage('Gagal mengirim pesan. Pastikan Supabase sudah diatur.');
+            setStatusMessage('Gagal mengirim pesan. Silakan coba lagi.');
             setTimeout(() => setStatus('idle'), 5000);
         }
     };
@@ -69,7 +91,13 @@ const Contact = () => {
 
             <div className="container mx-auto px-6">
                 <div className="flex flex-col items-center mb-16">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-4">Kontak & Kolaborasi</h2>
+                    <div className="flex items-center gap-3 mb-2">
+                        <h2 className="text-4xl font-bold text-slate-900">Kontak & Kolaborasi</h2>
+                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${isAdminOnline ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${isAdminOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></div>
+                            {isAdminOnline ? 'Admin Online' : 'Admin Offline'}
+                        </div>
+                    </div>
                     <div className="w-20 h-1.5 bg-primary rounded-full"></div>
                 </div>
 

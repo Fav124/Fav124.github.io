@@ -23,18 +23,31 @@ const AdminDashboard = ({ isOpen, onClose }) => {
 
         fetchMessages();
 
-        // Realtime subscription
-        const channel = supabase
-            .channel('realtime_messages')
+        // Realtime subscription & Presence
+        const channel = supabase.channel('admin_room', {
+            config: {
+                presence: {
+                    key: 'admin',
+                },
+            },
+        });
+
+        channel
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
                 table: 'messages'
             }, (payload) => {
                 setMessages(prev => [payload.new, ...prev]);
-                // Play a subtle sound or notification could go here
             })
-            .subscribe();
+            .on('presence', { event: 'sync' }, () => {
+                console.log('Presence synced');
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({ online_at: new Date().toISOString(), user: 'admin' });
+                }
+            });
 
         return () => {
             supabase.removeChannel(channel);
@@ -71,7 +84,7 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30 scroll-smooth">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-4">
                             <motion.div
@@ -79,49 +92,53 @@ const AdminDashboard = ({ isOpen, onClose }) => {
                                 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                                 className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full"
                             />
-                            <p className="text-slate-500 font-medium animate-pulse">Memuat pesan...</p>
+                            <p className="text-slate-500 font-medium animate-pulse text-sm uppercase tracking-widest">Sinkronisasi Database...</p>
                         </div>
                     ) : messages.length === 0 ? (
                         <div className="text-center py-20">
                             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                                 <MessageSquare size={40} />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800">Belum ada pesan</h3>
-                            <p className="text-slate-500">Pesan yang dikirim lewat formulir kontak akan muncul di sini.</p>
+                            <h3 className="text-lg font-bold text-slate-800">Log Kosong</h3>
+                            <p className="text-slate-400 text-sm">Belum ada permintaan kolaborasi yang masuk.</p>
                         </div>
                     ) : (
-                        <div className="grid gap-4">
-                            {messages.map((msg) => (
+                        <div className="flex flex-col gap-4">
+                            {messages.map((msg, i) => (
                                 <motion.div
                                     layout
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     key={msg.id}
-                                    className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group relative"
+                                    className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all flex flex-col gap-3 group relative"
                                 >
-                                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                                        <div className="space-y-3 flex-1">
-                                            <div className="flex flex-wrap gap-3">
-                                                <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
-                                                    <User size={14} /> {msg.name}
-                                                </div>
-                                                <div className="flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-full text-xs font-bold text-primary">
-                                                    <Mail size={14} /> {msg.email}
-                                                </div>
-                                                <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-400">
-                                                    <Calendar size={14} /> {new Date(msg.created_at).toLocaleString('id-ID')}
-                                                </div>
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                {msg.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-slate-800 mb-1">{msg.subject}</h4>
-                                                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                <h4 className="text-sm font-bold text-slate-900">{msg.name}</h4>
+                                                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{msg.email}</p>
                                             </div>
                                         </div>
+                                        <div className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
+                                            {new Date(msg.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
                                     </div>
-                                    {/* New Badge for recent messages */}
-                                    {new Date(msg.created_at) > new Date(Date.now() - 60000) && (
-                                        <div className="absolute top-4 right-4 bg-emerald-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-tighter animate-bounce">
-                                            NEW
+
+                                    <div className="pl-[52px]">
+                                        <div className="bg-slate-50 p-3 rounded-2xl rounded-tl-none border border-slate-100/50">
+                                            <p className="text-[10px] font-black text-primary uppercase mb-1">{msg.subject}</p>
+                                            <p className="text-sm text-slate-600 leading-relaxed">{msg.message}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Realtime "New" Ping */}
+                                    {new Date(msg.created_at) > new Date(Date.now() - 30000) && (
+                                        <div className="absolute top-2 right-2 flex gap-1 items-center">
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                                            <span className="text-[8px] font-black text-emerald-600 uppercase tracking-tighter">Live</span>
                                         </div>
                                     )}
                                 </motion.div>
