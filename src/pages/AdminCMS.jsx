@@ -12,7 +12,8 @@ import {
     Edit3,
     CheckCircle,
     MessageCircle,
-    Download
+    Download,
+    Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminChat from '../components/AdminChat';
@@ -72,8 +73,8 @@ const AdminCMS = () => {
                             key={item.id}
                             onClick={() => setActiveSection(item.id)}
                             className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all ${activeSection === item.id
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                 }`}
                         >
                             <item.icon size={20} />
