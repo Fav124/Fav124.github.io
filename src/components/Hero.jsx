@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Github, Linkedin, ArrowRight, User } from 'lucide-react';
+import { Github, Linkedin, ArrowRight, User, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { assets } from '../lib/assets';
 
 const Hero = () => {

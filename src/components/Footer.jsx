@@ -1,4 +1,5 @@
-import { Github, Mail, Instagram, Linkedin, Heart } from 'lucide-react';
+import { Github, Mail, Instagram, Linkedin, Heart, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 const Footer = () => {
