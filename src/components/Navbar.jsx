@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Rocket } from 'lucide-react';
+import Logo from './Logo';
+
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,20 +18,20 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Home', href: '#home' },
         { name: 'About', href: '#about' },
+        { name: 'Resume', href: '#resume' },
         { name: 'Skills', href: '#skills' },
         { name: 'Projects', href: '#projects' },
         { name: 'Contact', href: '#contact' },
     ];
 
+
     return (
         <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'glass py-3 shadow-sm' : 'bg-transparent py-5'}`}>
             <div className="container mx-auto px-6 flex justify-between items-center">
-                <a href="#home" className="flex items-center gap-2 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
-                        MHF
-                    </div>
-                    <span className="font-bold text-2xl tracking-tight text-slate-800">Favian</span>
+                <a href="#home">
+                    <Logo />
                 </a>
+
 
                 {/* Desktop Links */}
                 <div className="hidden md:flex items-center gap-10">

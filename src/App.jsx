@@ -1,5 +1,7 @@
 import AdminDashboard from './components/AdminDashboard';
+import Resume from './components/Resume';
 import Footer from './components/Footer';
+
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,10 +15,12 @@ function App() {
       <main>
         <Hero />
         <About />
+        <Resume />
         <Skills />
         <Projects />
         <Contact />
       </main>
+
       <Footer />
 
       {/* Internal Admin Entry - Bottom left hidden trigger */}
