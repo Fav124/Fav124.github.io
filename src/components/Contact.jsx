@@ -1,9 +1,72 @@
-import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Github, Send, Instagram, Linkedin } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Phone, MapPin, Github, Send, Instagram, Linkedin, CheckCircle2, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Contact = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    });
+    const [status, setStatus] = useState('idle'); // idle, loading, success, error
+    const [statusMessage, setStatusMessage] = useState('');
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus('loading');
+
+        try {
+            const { error } = await supabase
+                .from('messages')
+                .insert([
+                    {
+                        name: formData.name,
+                        email: formData.email,
+                        subject: formData.subject,
+                        message: formData.message
+                    }
+                ]);
+
+            if (error) throw error;
+
+            setStatus('success');
+            setStatusMessage('Pesan berhasil terkirim secara realtime!');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+
+            setTimeout(() => setStatus('idle'), 5000);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            setStatus('error');
+            setStatusMessage('Gagal mengirim pesan. Pastikan Supabase sudah diatur.');
+            setTimeout(() => setStatus('idle'), 5000);
+        }
+    };
+
     return (
-        <section id="contact" className="py-24 bg-slate-50">
+        <section id="contact" className="py-24 bg-slate-50 relative overflow-hidden">
+            {/* Notification Toast */}
+            <AnimatePresence>
+                {status !== 'idle' && status !== 'loading' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        className={`fixed bottom-8 right-8 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${status === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-red-50 border-red-100 text-red-800'
+                            }`}
+                    >
+                        {status === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+                        <p className="font-bold">{statusMessage}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="container mx-auto px-6">
                 <div className="flex flex-col items-center mb-16">
                     <h2 className="text-4xl font-bold text-slate-900 mb-4">Kontak & Kolaborasi</h2>
@@ -19,30 +82,76 @@ const Contact = () => {
                             viewport={{ once: true }}
                             className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100"
                         >
-                            <form className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-slate-700 ml-1">Nama Lengkap</label>
-                                        <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all" placeholder="Enter your name" />
+                                        <input
+                                            id="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            required
+                                            type="text"
+                                            className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all"
+                                            placeholder="Enter your name"
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-slate-700 ml-1">Alamat Email</label>
-                                        <input type="email" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all" placeholder="Enter your email" />
+                                        <input
+                                            id="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            type="email"
+                                            className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all"
+                                            placeholder="Enter your email"
+                                        />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700 ml-1">Subjek</label>
-                                    <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all" placeholder="How can I help you?" />
+                                    <input
+                                        id="subject"
+                                        value={formData.subject}
+                                        onChange={handleChange}
+                                        required
+                                        type="text"
+                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all"
+                                        placeholder="How can I help you?"
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700 ml-1">Pesan</label>
-                                    <textarea rows="5" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none" placeholder="Tell me about your project..."></textarea>
+                                    <textarea
+                                        id="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        required
+                                        rows="5"
+                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none"
+                                        placeholder="Tell me about your project..."
+                                    ></textarea>
                                 </div>
 
-                                <button type="submit" className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 group">
-                                    Kirim Pesan <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                <button
+                                    disabled={status === 'loading'}
+                                    type="submit"
+                                    className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 group disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {status === 'loading' ? (
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                            className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full"
+                                        />
+                                    ) : (
+                                        <>
+                                            Kirim Pesan <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                        </>
+                                    )}
                                 </button>
                             </form>
                         </motion.div>
@@ -54,11 +163,14 @@ const Contact = () => {
                             initial={{ opacity: 0, x: 30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] text-white shadow-xl shadow-slate-200"
+                            className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] text-white shadow-xl shadow-slate-200 relative overflow-hidden"
                         >
-                            <h3 className="text-2xl font-bold mb-8">Informasi Kontak</h3>
+                            <div className="absolute top-0 right-0 p-8 opacity-10">
+                                <Mail size={120} />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-8 relative z-10">Informasi Kontak</h3>
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 relative z-10">
                                 <a href="mailto:favianmuhammadhafiz@gmail.com" className="flex gap-4 group">
                                     <div className="p-3 bg-white/10 rounded-2xl h-fit group-hover:bg-primary transition-colors">
                                         <Mail size={24} />
@@ -90,7 +202,7 @@ const Contact = () => {
                                 </div>
                             </div>
 
-                            <div className="mt-12 flex gap-4">
+                            <div className="mt-12 flex gap-4 relative z-10">
                                 {[
                                     { icon: Github, href: "https://github.com/fav124" },
                                     { icon: Instagram, href: "#" },
@@ -127,3 +239,4 @@ const Contact = () => {
 };
 
 export default Contact;
+
