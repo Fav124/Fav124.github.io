@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap, Award, Download, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
