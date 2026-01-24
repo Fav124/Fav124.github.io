@@ -10,7 +10,7 @@ const Logo = () => {
                 2. Ganti <Terminal /> di bawah dengan <img src="/logo_kamu.png" className="w-8 h-8" alt="Logo" />
             */}
             <div className="p-2 bg-primary rounded-xl text-white group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">
-                <Terminal size={24} />
+                <img src="/archlinux-logo.svg" className="w-8 h-8" alt="Logo" />
             </div>
 
             <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent tracking-tight">
