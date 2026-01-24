@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Rocket } from 'lucide-react';
+import { Menu, X, Rocket, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
-
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +48,9 @@ const Navbar = () => {
                             </li>
                         ))}
                     </ul>
+                    <Link to="/chat" className="text-slate-600 hover:text-primary font-bold text-sm transition-all flex items-center gap-2">
+                        <MessageCircle size={18} /> Chat
+                    </Link>
                     <a href="#contact" className="btn btn-primary flex items-center gap-2">
                         Hire Me <Rocket size={18} />
                     </a>

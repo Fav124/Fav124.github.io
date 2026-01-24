@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap, Award, Download, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 
 const Resume = () => {
     const experiences = [
@@ -57,9 +58,13 @@ const Resume = () => {
                             <p className="text-slate-500 text-sm leading-relaxed mb-6 font-medium">
                                 Pelajar SMA kelas 3 dari Pandau Jaya yang berfokus pada pengembangan web (Laravel) dan aplikasi Android.
                             </p>
-                            <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 group">
+                            <Link
+                                to="/cv"
+                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 group"
+                            >
                                 <Download size={20} /> Download CV <span className="text-[10px] opacity-50 font-normal">(PDF)</span>
-                            </button>
+                            </Link>
+
                         </motion.div>
                     </div>
 

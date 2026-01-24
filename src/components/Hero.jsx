@@ -1,9 +1,16 @@
 import { motion } from 'framer-motion';
-import { Github, Linkedin, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, ArrowRight, User } from 'lucide-react';
+import { assets } from '../lib/assets';
 
 const Hero = () => {
     return (
         <section id="home" className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-b from-blue-50 to-white">
+            {/* Background Image Mask */}
+            <div
+                className="absolute inset-0 opacity-[0.03] pointer-events-none grayscale"
+                style={{ backgroundImage: `url(${assets.heroBg})`, backgroundSize: 'cover' }}
+            ></div>
+
             {/* Background Shapes */}
             <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-10 left-[-5%] w-[300px] h-[300px] bg-accent/10 rounded-full blur-2xl"></div>
@@ -30,9 +37,9 @@ const Hero = () => {
                         <a href="#projects" className="btn btn-primary flex items-center gap-2 group">
                             Lihat Proyek <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="#contact" className="btn btn-secondary">
-                            Hubungi Saya
-                        </a>
+                        <Link to="/chat" className="btn btn-secondary flex items-center gap-2">
+                            <MessageCircle size={20} /> Live Chat
+                        </Link>
                     </div>
 
                     <div className="flex items-center gap-6 justify-center md:justify-start">
@@ -53,11 +60,18 @@ const Hero = () => {
                 >
                     <div className="relative w-72 h-72 md:w-96 md:h-96">
                         {/* Morphing Shape */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent animate-morphing opacity-80 shadow-2xl shadow-primary/20"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent animate-morphing opacity-80 shadow-2xl shadow-primary/20 overflow-hidden rounded-full">
+                            {/* TIPS: Ganti foto utama di src/lib/assets.js bagian heroImage */}
+                            <img
+                                src={assets.heroImage}
+                                alt="Favian Profile"
+                                className="w-full h-full object-cover mix-blend-overlay opacity-50"
+                            />
+                        </div>
 
-                        {/* Overlay Initials */}
+                        {/* Overlay Initials - Now subtle and behind if image exists */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-8xl md:text-9xl font-black text-white/40 select-none">MF</span>
+                            {!assets.heroImage && <span className="text-8xl md:text-9xl font-black text-white/40 select-none uppercase tracking-tighter">MF</span>}
                         </div>
 
                         {/* Floating Elements */}
@@ -75,7 +89,7 @@ const Hero = () => {
                             transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
                             className="absolute -bottom-8 -left-4 p-4 bg-white/80 backdrop-blur-md shadow-xl rounded-2xl border border-white/20"
                         >
-                            <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Current Proj</p>
+                            <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Current Project</p>
                             <p className="font-bold text-primary">DEISA System</p>
                         </motion.div>
                     </div>
